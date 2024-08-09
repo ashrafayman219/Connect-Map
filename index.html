@@ -1,0 +1,75 @@
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>SnapChat Interactive Map</title>
+  <script type="module" src="https://js.arcgis.com/calcite-components/2.11.0/calcite.esm.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/2.11.0/calcite.css" />
+  <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css" />
+  <link rel="stylesheet" href="style.css">
+  <script src="https://js.arcgis.com/4.30/"></script>
+</head>
+<style>
+  #inputContainer {
+    display: none;
+  }
+</style>
+
+<body>
+
+  <div id="titleDiv" class="esri-widget">
+    <div id="title">SnapChat Map App</div>
+  </div>
+  <div id="viewDiv"></div>
+
+
+  <div id="inputContainer">
+
+    <calcite-panel icon-start="pins" class="esri-widget esri-component" heading="" id="panelDetails" closable>
+      <calcite-action scale="m" icon="pins" text="Favorite" slot="header-actions-start"></calcite-action>
+      <calcite-block id="categoryLabel" class="hide" heading="Categories" scale="l" description="">
+        <calcite-icon scale="m" slot="icon" icon="select-category"></calcite-icon>
+      </calcite-block>
+    </calcite-panel>
+
+    <!-- <calcite-chip id="chip" value="Alluvial" appearance="outline-fill">
+      <calcite-avatar slot="image" full-name="Alluvial"></calcite-avatar>
+      
+    </calcite-chip> -->
+
+
+    <div id="statisticsContainer">
+      <calcite-chip id="maleCount" value="Males" appearance="outline-fill">
+          Males: <span id="maleNumber">0</span>
+      </calcite-chip>
+      <calcite-chip id="femaleCount" value="Females" appearance="outline-fill">
+          Females: <span id="femaleNumber">0</span>
+      </calcite-chip>
+  </div>
+  
+  <div id="photosContainer">
+      <!-- User photos and names will be added here dynamically -->
+  </div>
+
+      <section>
+      <calcite-button id="checkinbtn" round>Check in</calcite-button>
+    </section>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>
