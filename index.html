@@ -7,7 +7,10 @@
   <script type="module" src="https://js.arcgis.com/calcite-components/2.11.0/calcite.esm.js"></script>
   <link rel="stylesheet" type="text/css" href="https://js.arcgis.com/calcite-components/2.11.0/calcite.css" />
   <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css" />
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- <link rel="stylesheet" href="style.css" /> -->
   <script src="https://js.arcgis.com/4.30/"></script>
 </head>
 <style>
@@ -15,17 +18,200 @@
     display: none;
   }
 </style>
+<style>
+  html,
+  body,
+  #viewDiv {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .tooltip {
+    position: absolute;
+    pointer-events: none;
+    transition: opacity 200ms;
+  }
+
+  .tooltip>div {
+    margin: 0 auto;
+    padding: 12px;
+    border-radius: 4px;
+    box-shadow: 0px 0px 4px rgba(255, 255, 255, 0.75);
+    transform: translate3d(-50%, -125%, 0);
+  }
+
+  #titleDiv {
+    position: absolute;
+    height: 55px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    color: #f8f8f8;
+    background: #464646;
+    z-index: 1;
+  }
+
+  #title {
+    margin: 15px;
+    font-size: 20px;
+    overflow: hidden;
+  }
+
+  .esri-ui-top-left {
+    align-items: flex-start;
+    top: 52px;
+    left: 0;
+  }
+
+  #chip {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  #inputContainer {
+    position: fixed;
+    bottom: 39px;
+    left: 10px;
+    right: 10px;
+    background: white;
+    padding: 10px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #placeNameLabel {
+    font-size: 1.17em;
+    font-weight: bold;
+    margin: 0rem;
+  }
+
+  @media (min-width: 768px) {
+    #inputContainer {
+      max-width: 400px;
+      left: auto;
+      right: 10px;
+      bottom: 75px;
+    }
+  }
+
+  section {
+    display: flex;
+    /* flex-direction: column; */
+    gap: 5px;
+  }
+
+  #checkinbtn,
+  #checkinbtnincognito {
+    --calcite-color-brand: #F09C13;
+    --calcite-color-brand-hover: #c98314;
+  }
+
+  label {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  #statisticsContainer {
+    display: flex;
+    justify-content: space-around;
+    margin: 10px 0;
+  }
+
+  #incognito {
+    display: flex;
+    justify-content: center;
+  }
+
+  .circle-photo {
+    width: 100px;
+    /* Adjust size as needed */
+    height: 100px;
+    border-radius: 50%;
+    /* Makes the photo circular */
+    object-fit: cover;
+    /* Ensures the image covers the size */
+    margin-bottom: 10px;
+    /* Space between photo and username */
+  }
+
+  .user-photo div {
+    font-weight: bold;
+    text-align: center;
+  }
+
+  /* Container to hold the profiles */
+  #photosContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    /* Two columns layout */
+    gap: 10px;
+    /* Space between items */
+    overflow-y: auto;
+    /* Enables vertical scrolling */
+    max-height: 400px;
+    /* Adjust as needed to constrain height */
+    padding: 10px;
+    /* Optional: padding inside the container */
+    background-color: #f9f9f9;
+    /* Optional: background color for container */
+  }
+
+  /* Individual profile item styling */
+  .user-photo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* justify-content: center; */
+  }
+
+  .user-photo img {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 5px;
+    display: block;
+    /* Ensures the image stays in a block format */
+  }
+
+  #inputContainer {
+    padding: 15px;
+    background: white;
+    border-radius: 10px;
+  }
+
+  @media (max-width: 600px) {
+    #statisticsContainer {
+      /* flex-direction: column; */
+      align-items: center;
+    }
+
+    #photosContainer {
+      justify-content: center;
+    }
+  }
+
+  .fa-person,
+  .fa-person-dress {
+    margin-right: 5px;
+    /* Space between icon and text */
+  }
+</style>
 
 <body>
-
   <div id="titleDiv" class="esri-widget">
     <div id="title">Connect Map</div>
   </div>
   <div id="viewDiv"></div>
 
-
   <div id="inputContainer">
-
     <calcite-panel icon-start="pins" class="esri-widget esri-component" heading="" id="panelDetails" closable>
       <calcite-action scale="m" icon="pins" text="Favorite" slot="header-actions-start"></calcite-action>
       <calcite-block id="categoryLabel" class="hide" heading="Categories" scale="l" description="">
@@ -38,38 +224,1223 @@
       
     </calcite-chip> -->
 
-
     <div id="statisticsContainer">
       <calcite-chip id="maleCount" value="Males" appearance="outline-fill">
-          Males: <span id="maleNumber">0</span>
+        <i class="fa-sharp fa-solid fa-person fa-xl" style="color: #74c0fc"></i>
+        <span id="maleNumber">0</span>
       </calcite-chip>
       <calcite-chip id="femaleCount" value="Females" appearance="outline-fill">
-          Females: <span id="femaleNumber">0</span>
+        <i class="fa-sharp fa-solid fa-person-dress fa-xl" style="color: #e69edc"></i>
+        <span id="femaleNumber">0</span>
       </calcite-chip>
-  </div>
-  
-  <div id="photosContainer">
-      <!-- User photos and names will be added here dynamically -->
-  </div>
+    </div>
 
-      <section>
-      <calcite-button id="checkinbtn" round>Check in</calcite-button>
+    <!-- <div id="incognito">
+      <calcite-label layout="inline" scale="l">
+        <calcite-checkbox scale="l" id="checkIncognito"></calcite-checkbox>
+        Incognito Mode
+      </calcite-label>
+    </div> -->
+
+    <div id="photosContainer">
+      <!-- User photos and names will be added here dynamically -->
+    </div>
+
+    <section>
+      <calcite-button icon-start="check-shield" width="full" id="checkinbtn" round>Check in</calcite-button>
+      <calcite-button icon-start="check-shield" width="full" id="checkinbtnincognito" round>Check in
+        incognito</calcite-button>
     </section>
   </div>
 
+  <!-- <script src="script.js"></script> -->
+  <script>
+    document.getElementById("inputContainer").style.display = "none";
+    var displayMap;
+    let view;
+    let userData = {
+      Name: "Jannette01",
+      Gender: "Female",
+      // urlProfile: "https://i.pinimg.com/474x/9d/97/3e/9d973e10d026bd0359062439989b8eaf.jpg", // Avatar
+      urlProfile: "https://78041cf8c2d97f2a2e766616ac08f96f.cdn.bubble.io/f1723292454450x898610997668299600/59519E65-F022-45BD-A529-E366B19554A0.jpeg", // Jannette
+      Long: -118.49373400210847,
+      Lat: 34.01341278645862,
+      profile: "https://connectdating.page.link/yQ4Y",
+      uniqueID: "1723548726491x502588139975268740"
+      // uniqueID: "1723548726491x502588139975268741",
+      // uniqueID: "1723548726491x502588139975268749",
+      // uniqueID: "1723548726491x502588139975268745",
+    };
+
+    let incognitoModeImageMale =
+      "https://78041cf8c2d97f2a2e766616ac08f96f.cdn.bubble.io/f1723545993456x938053208777771300/WhatsApp%20Image%202024-08-13%20at%2015.45.10%20%281%29.jpeg?_gl=1*1v8t8gb*_gcl_au*MTQ3MDM4MjI2LjE3MjE2NDE0MzU";
+    let incognitoModeImageFemale =
+      "https://78041cf8c2d97f2a2e766616ac08f96f.cdn.bubble.io/f1723545984933x181406080961107780/WhatsApp%20Image%202024-08-13%20at%2015.45.10.jpeg?_gl=1*145sz2c*_gcl_au*MTQ3MDM4MjI2LjE3MjE2NDE0MzU";
+    let incognitoModeImageOther =
+      "https://78041cf8c2d97f2a2e766616ac08f96f.cdn.bubble.io/f1723545997740x316918985458725570/WhatsApp%20Image%202024-08-13%20at%2015.45.09.jpeg?_gl=1*1v8t8gb*_gcl_au*MTQ3MDM4MjI2LjE3MjE2NDE0MzU";
+
+    function loadModule(moduleName) {
+      return new Promise((resolve, reject) => {
+        require([moduleName], (module) => {
+          if (module) {
+            resolve(module);
+          } else {
+            reject(new Error(`Module not found: ${moduleName}`));
+          }
+        }, (error) => {
+          reject(error);
+        });
+      });
+    }
+
+    async function initializeMapPlaces(userData) {
+      try {
+        const [
+          esriConfig,
+          Map,
+          MapView,
+          VectorTileLayer,
+          Basemap,
+          BasemapStyle,
+          promiseUtils,
+          places,
+          FetchPlaceParameters,
+          PlacesQueryParameters,
+          Expand,
+          FeatureLayer,
+          Graphic,
+          LayerList,
+          reactiveUtils,
+          geometryEngine,
+          GraphicsLayer,
+          geodesicUtils,
+          Point,
+        ] = await Promise.all([
+          loadModule("esri/config"),
+          loadModule("esri/Map"),
+          loadModule("esri/views/MapView"),
+          loadModule("esri/layers/VectorTileLayer"),
+          loadModule("esri/Basemap"),
+          loadModule("esri/support/BasemapStyle"),
+          loadModule("esri/core/promiseUtils"),
+          loadModule("esri/rest/places"),
+          loadModule("esri/rest/support/FetchPlaceParameters"),
+          loadModule("esri/rest/support/PlacesQueryParameters"),
+          loadModule("esri/widgets/Expand"),
+          loadModule("esri/layers/FeatureLayer"),
+          loadModule("esri/Graphic"),
+          loadModule("esri/widgets/LayerList"),
+          loadModule("esri/core/reactiveUtils"),
+          loadModule("esri/geometry/geometryEngine"),
+          loadModule("esri/layers/GraphicsLayer"),
+          loadModule("esri/geometry/support/geodesicUtils"),
+          loadModule("esri/geometry/Point"),
+        ]);
+
+        const apiKey =
+          "AAPK756f006de03e44d28710cb446c8dedb4rkQyhmzX6upFiYPzQT0HNQNMJ5qPyO1TnPDSPXT4EAM_DlQSj20ShRD7vyKa7a1H";
+        // "AAPT3NKHt6i2urmWtqOuugvr9fHQ610Hqjyi5sds6bqAsnn9I-YR8MGrGmBIRaTBa0YRIe6Q4TbO0Sxpbe0Hdpoq-cXhYuFZXwcne0v5zx12HSRAOwhgvge7TMi_ZeLwy0_essF_3BYl9EcFg2u2VbHWLwg74lLnugEmYKQwsaLZ1Qnz98LrXNRwnhTCVdiGf-Hv8o5u4UDOxmVy-CcWWDQuo3eP_MsyG1cM7zkbSmitszo.";
+        esriConfig.apiKey = apiKey;
+
+        // Display places with the basemap style.
+        const basemap = new Basemap({
+          style: new BasemapStyle({
+            id: "arcgis/navigation",
+            places: "attributed", // returns the place's esri_place_id
+          }),
+        });
+
+        const renderer = {
+          type: "heatmap",
+          colorStops: [
+            { color: [133, 193, 200, 0], ratio: 0 },
+            { color: [133, 193, 200, 0], ratio: 0.01 },
+            { color: [133, 193, 200, 255], ratio: 0.01 },
+            { color: [133, 193, 200, 255], ratio: 0.01 },
+            { color: [144, 161, 190, 255], ratio: 0.0925 },
+            { color: [156, 129, 132, 255], ratio: 0.175 },
+            { color: [167, 97, 170, 255], ratio: 0.2575 },
+            { color: [175, 73, 128, 255], ratio: 0.34 },
+            { color: [184, 48, 85, 255], ratio: 0.4225 },
+            { color: [192, 24, 42, 255], ratio: 0.505 },
+            { color: [200, 0, 0, 255], ratio: 0.5875 },
+            { color: [211, 51, 0, 255], ratio: 0.67 },
+            { color: [222, 102, 0, 255], ratio: 0.7525 },
+            { color: [233, 153, 0, 255], ratio: 0.835 },
+            { color: [244, 204, 0, 255], ratio: 0.9175 },
+            { color: [255, 255, 0, 255], ratio: 1 },
+          ],
+          maxDensity: 0.01,
+          minDensity: 0,
+        };
+
+        // Create featurelayer from feature service
+        const checkinLayer = new FeatureLayer({
+          // URL to the service
+          url: "https://services3.arcgis.com/AtFD5NjBs72VpMjN/arcgis/rest/services/checkinTest077/FeatureServer/0",
+          renderer: renderer,
+        });
+
+        // First create a point geometry (this is the location of the Titanic)
+        const point = {
+          type: "point", // autocasts as new Point()
+          longitude: userData.long,
+          latitude: userData.lat,
+        };
+
+        // Create a symbol for drawing the point
+        const markerSymbol = {
+          type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+          color: [226, 119, 40],
+          outline: {
+            // autocasts as new SimpleLineSymbol()
+            color: [255, 255, 255],
+            width: 2,
+          },
+        };
+
+        // Create a graphic and add the geometry and symbol to it
+        const pointGraphic = new Graphic({
+          geometry: point,
+          symbol: markerSymbol,
+        });
+
+        const polySym = {
+          type: "simple-fill", // autocasts as new SimpleFillSymbol()
+          color: [140, 140, 222, 0.5],
+          outline: {
+            color: [0, 0, 0, 0.5],
+            width: 2,
+          },
+        };
+
+        const graphicsLayer = new GraphicsLayer();
+        // const pointLayer = new GraphicsLayer();
+        // const bufferLayer = new GraphicsLayer();
+        // graphicsLayer.add(pointGraphic);
+
+        displayMap = new Map({
+          basemap: basemap,
+          layers: [checkinLayer],
+        });
+
+        view = new MapView({
+          container: "viewDiv",
+          map: displayMap,
+          center: [userData.Long, userData.Lat],
+          zoom: 15,
+          constraints: {
+            minScale: 72223.81928607849,
+          },
+        });
+
+        await view.when();
+        view.ui.add("titleDiv");
+        // get the places layer from the basemap
+        const layer = displayMap.allLayers.getItemAt(0);
+
+        // let pointerMoveHandle = pointerMoveHandler();
+        // // Call hitTest from pointer-move to get place features from the places vector tile layer
+        // function pointerMoveHandler() {
+        //   return view.on("pointer-move", async (event) => {
+        //     let hits;
+        //     try {
+        //       hits = await hitTest(event);
+        //       let displayContent;
+        //       if (hits) {
+        //         displayContent = `Name: ${hits[0].attributes["_name"]}`;
+        //         vtlTooltip.show(hits.screenPoint, displayContent);
+        //       } else {
+        //         vtlTooltip.hide();
+        //       }
+        //     } catch { }
+        //   });
+        // }
+
+        let alert = document.createElement("calcite-alert");
+
+        function creatingAlertConfirmation(placeName) {
+          alert.remove();
+          alert = document.createElement("calcite-alert");
+          alert.kind = "info";
+          alert.open = true;
+          alert.icon = "register";
+          alert.setAttribute("auto-close", "true");
+          alert.placement = "top";
+          let divTitle = document.createElement("div");
+          let divMessage = document.createElement("div");
+          divTitle.slot = "title";
+          divTitle.innerHTML = `You have successfully checked in at ${placeName}.`;
+          divMessage.slot = "message";
+          divMessage.innerHTML = `Your check in will last for 1 hour.`;
+          alert.append(divTitle);
+          alert.append(divMessage);
+          view.ui.add(alert);
+        }
+
+        const panel = document.getElementById("panelDetails");
+        panel.addEventListener("calcitePanelClose", () => {
+          document.getElementById("panelDetails").style.display = "none";
+          document.getElementById("inputContainer").style.display = "none";
+        });
+
+        // async function fetchLayerFields(layer) {
+        //   try {
+        //     const response = await layer.load();
+        //     console.log("Fields in your feature layer:", layer.fields);
+        //   } catch (error) {
+        //     console.error("Error fetching layer fields:", error);
+        //   }
+        // }
+        // fetchLayerFields(checkinLayer);
+
+
+        let checkinbtnincognito = document.getElementById("checkinbtnincognito");
+
+
+        // Global variable to track current check-in feature
+        let currentCheckInFeature = null;
+
+
+
+
+        let checkinbtn = document.getElementById("checkinbtn");
+
+        function updateCheckInIncognitoBtn(placeName) {
+          let query = checkinLayer.createQuery();
+          query.where = `PlaceName = '${placeName}'`;
+
+          checkinLayer.queryFeatures(query).then((result) => {
+            console.log(result, "query");
+            // Update statistics
+            let maleCount = result.features.filter(
+              (f) => f.attributes.Gender === "Male"
+            ).length;
+            let femaleCount = result.features.filter(
+              (f) => f.attributes.Gender === "Female"
+            ).length;
+
+            document.getElementById("maleNumber").innerText = maleCount;
+            document.getElementById("femaleNumber").innerText = femaleCount;
+
+            // Clear existing photos
+            let photosContainer = document.getElementById("photosContainer");
+            // photosContainer.innerHTML = "";
+
+            // Add user photos and names
+            result.features.forEach((feature) => {
+              // let userPhotoContainer = document.createElement("div");
+              // userPhotoContainer.className = "user-photo";
+
+              // let userPhoto = document.createElement("img");
+              // userPhoto.src =
+              //   feature.attributes.UrlProfile ||
+              //   "default_placeholder.png"; // Provide a fallback;
+              // userPhoto.alt = feature.attributes.UserName;
+              // userPhoto.className = "circle-photo";
+
+              // let userName = document.createElement("div");
+              // userName.innerText = feature.attributes.UserName;
+
+              // userPhotoContainer.appendChild(userPhoto);
+              // userPhotoContainer.appendChild(userName);
+              // photosContainer.appendChild(userPhotoContainer);
+
+              // console.log(feature, "NNNNN")
+
+              if (feature.attributes.uniqueID == userData.uniqueID) {
+                console.log("incognito");
+                let userPhotoContainer = document.createElement("div");
+                userPhotoContainer.className = "user-photo";
+
+                // Create the link element
+                let link = document.createElement("a");
+                link.href = feature.attributes.profile || "#"; // Use the ProfileUrl attribute
+                link.target = "_blank"; // Open the link in a new tab
+
+                let userPhoto = document.createElement("img");
+                userPhoto.src = feature.attributes.UrlIncognito || "default_placeholder.png"; // Provide a fallback;
+                userPhoto.alt = feature.attributes.UserName;
+                userPhoto.className = "circle-photo";
+
+                // Append the image to the link
+                link.appendChild(userPhoto);
+
+                let userName = document.createElement("div");
+                // userName.innerText = feature.attributes.UserName;
+                userName.innerText = "";
+
+                userPhotoContainer.appendChild(link);
+                userPhotoContainer.appendChild(userName);
+                photosContainer.appendChild(userPhotoContainer);
+              }
+
+
+            });
+          });
+        }
+
+        function updatePlacesCheckInBtn(placeName) {
+          let query = checkinLayer.createQuery();
+          query.where = `PlaceName = '${placeName}'`;
+
+          checkinLayer.queryFeatures(query).then((result) => {
+            console.log(result, "query");
+            // Update statistics
+            let maleCount = result.features.filter(
+              (f) => f.attributes.Gender === "Male"
+            ).length;
+            let femaleCount = result.features.filter(
+              (f) => f.attributes.Gender === "Female"
+            ).length;
+
+            document.getElementById("maleNumber").innerText = maleCount;
+            document.getElementById("femaleNumber").innerText = femaleCount;
+
+            // Clear existing photos
+            let photosContainer = document.getElementById("photosContainer");
+            // photosContainer.innerHTML = "";
+
+            // Add user photos and names
+            result.features.forEach((feature) => {
+              // let userPhotoContainer = document.createElement("div");
+              // userPhotoContainer.className = "user-photo";
+
+              // let userPhoto = document.createElement("img");
+              // userPhoto.src =
+              //   feature.attributes.UrlProfile ||
+              //   "default_placeholder.png"; // Provide a fallback;
+              // userPhoto.alt = feature.attributes.UserName;
+              // userPhoto.className = "circle-photo";
+
+              // let userName = document.createElement("div");
+              // userName.innerText = feature.attributes.UserName;
+
+              // userPhotoContainer.appendChild(userPhoto);
+              // userPhotoContainer.appendChild(userName);
+              // photosContainer.appendChild(userPhotoContainer);
+
+              // console.log(feature, "NNNNN")
+
+              if (feature.attributes.uniqueID == userData.uniqueID) {
+                console.log("with profile");
+                let userPhotoContainer = document.createElement("div");
+                userPhotoContainer.className = "user-photo";
+
+                // Create the link element
+                let link = document.createElement("a");
+                link.href = feature.attributes.profile || "#"; // Use the ProfileUrl attribute
+                link.target = "_blank"; // Open the link in a new tab
+
+                let userPhoto = document.createElement("img");
+                userPhoto.src = feature.attributes.UrlProfile || "default_placeholder.png"; // Provide a fallback;
+                userPhoto.alt = feature.attributes.UserName;
+                userPhoto.className = "circle-photo";
+
+                // Append the image to the link
+                link.appendChild(userPhoto);
+
+                let userName = document.createElement("div");
+                userName.innerText = feature.attributes.UserName;
+
+                userPhotoContainer.appendChild(link);
+                userPhotoContainer.appendChild(userName);
+                photosContainer.appendChild(userPhotoContainer);
+              }
+
+              // else {
+              //   console.log("no profile photo");
+              //   let userPhotoContainer = document.createElement("div");
+              //   userPhotoContainer.className = "user-photo";
+
+              //   let userPhoto = document.createElement("img");
+              //   userPhoto.src = feature.attributes.UrlIncognito || "default_placeholder.png"; // Provide a fallback;
+              //   userPhoto.alt = feature.attributes.UserName;
+              //   userPhoto.className = "circle-photo";
+
+              //   let userName = document.createElement("div");
+              //   userName.innerText = feature.attributes.UserName;
+
+              //   userPhotoContainer.appendChild(userPhoto);
+              //   userPhotoContainer.appendChild(userName);
+              //   photosContainer.appendChild(userPhotoContainer);
+              // }
+            });
+          });
+        }
+
+
+
+
+        // function updatePlaceDetailsEveryTime(placeName) {
+        //   let query = checkinLayer.createQuery();
+        //   query.where = `PlaceName = '${placeName}'`;
+
+        //   checkinLayer.queryFeatures(query).then((result) => {
+        //     let now = new Date();
+        //     let photosContainer = document.getElementById("photosContainer");
+        //     photosContainer.innerHTML = ""; // Clear existing content
+
+        //     result.features.forEach((feature) => {
+        //       // Create a container for the user photo and link
+        //       let userPhotoContainer = document.createElement("div");
+        //       userPhotoContainer.className = "user-photo";
+
+        //       // Create the link element
+        //       let link = document.createElement("a");
+        //       link.href = feature.attributes.ProfileUrl || "#"; // Use the ProfileUrl attribute
+        //       link.target = "_blank"; // Open the link in a new tab
+
+        //       // Create the image element
+        //       let userPhoto = document.createElement("img");
+        //       userPhoto.src = feature.attributes.incognito === "No" ? feature.attributes.UrlProfile : feature.attributes.UrlIncognito;
+        //       userPhoto.alt = feature.attributes.UserName;
+        //       userPhoto.className = "circle-photo";
+
+        //       // Append the image to the link
+        //       link.appendChild(userPhoto);
+
+        //       // Create the username element
+        //       let userName = document.createElement("div");
+        //       userName.innerText = feature.attributes.incognito === "No" ? feature.attributes.UserName : "Anonymous";
+
+        //       // Append the link and username to the user photo container
+        //       userPhotoContainer.appendChild(link);
+        //       userPhotoContainer.appendChild(userName);
+
+        //       // Append the user photo container to the photos container
+        //       photosContainer.appendChild(userPhotoContainer);
+        //     });
+        //   });
+        // }
+
+
+
+
+        function updatePlaceDetailsEveryTime(placeName) {
+          let query = checkinLayer.createQuery();
+          query.where = `PlaceName = '${placeName}'`;
+
+          checkinLayer.queryFeatures(query).then((result) => {
+            console.log(result, "query");
+            // Update statistics
+            let maleCount = result.features.filter(
+              (f) => f.attributes.Gender === "Male"
+            ).length;
+            let femaleCount = result.features.filter(
+              (f) => f.attributes.Gender === "Female"
+            ).length;
+
+            document.getElementById("maleNumber").innerText = maleCount;
+            document.getElementById("femaleNumber").innerText = femaleCount;
+
+            // Clear existing photos
+            let photosContainer = document.getElementById("photosContainer");
+            photosContainer.innerHTML = "";
+
+            // Add user photos and names
+            result.features.forEach((feature) => {
+              if (feature.attributes.incognito === "No") {
+                let userPhotoContainer = document.createElement("div");
+                userPhotoContainer.className = "user-photo";
+
+                // Create the link element
+                let link = document.createElement("a");
+                link.href = feature.attributes.profile || "#"; // Use the ProfileUrl attribute
+                link.target = "_blank"; // Open the link in a new tab
+
+                let userPhoto = document.createElement("img");
+                userPhoto.src = feature.attributes.UrlProfile
+                userPhoto.alt = feature.attributes.UserName;
+                userPhoto.className = "circle-photo";
+
+                // Append the image to the link
+                link.appendChild(userPhoto);
+
+                let userName = document.createElement("div");
+                userName.innerText = feature.attributes.UserName;
+
+                userPhotoContainer.appendChild(link);
+                userPhotoContainer.appendChild(userName);
+                photosContainer.appendChild(userPhotoContainer);
+              } else {
+                let userPhotoContainer = document.createElement("div");
+                userPhotoContainer.className = "user-photo";
+
+                let userPhoto = document.createElement("img");
+                userPhoto.src = feature.attributes.UrlIncognito
+                userPhoto.alt = feature.attributes.UserName;
+                userPhoto.className = "circle-photo";
+
+                let userName = document.createElement("div");
+                userName.innerText = "Incognito User";
+
+                userPhotoContainer.appendChild(userPhoto);
+                userPhotoContainer.appendChild(userName);
+                photosContainer.appendChild(userPhotoContainer);
+              }
+
+            });
+          });
+        }
+
+        async function measureDistance(userData, placeCoord) {
+          const distance = geodesicUtils.geodesicDistance(
+            new Point({
+              x: userData.Long,
+              y: userData.Lat,
+            }),
+            new Point({
+              x: placeCoord.geometry.longitude,
+              y: placeCoord.geometry.latitude,
+            }),
+            "meters"
+          );
+          return distance;
+        }
+
+        let alertDist = document.createElement("calcite-alert");
+        function checkingAlert(placeName) {
+          alertDist.remove();
+          document.getElementById("checkinbtn").disabled = true;
+          checkinbtnincognito.disabled = true;
+          alertDist = document.createElement("calcite-alert");
+          alertDist.kind = "brand";
+          alertDist.label = "Danger alert";
+          alertDist.icon = "smile";
+          alertDist.open = true;
+          alertDist.placement = "top";
+          alertDist.setAttribute("auto-close", "true");
+          let divDist = document.createElement("div");
+          divDist.slot = "title";
+          divDist.innerHTML =
+            "Try to check in when you are close from the place.";
+          alertDist.append(divDist);
+          view.ui.add(alertDist);
+        }
+
+        let placeNameLabel = document.getElementById("panelDetails");
+        let categoryLabel = document.getElementById("categoryLabel");
+
+        let placeGraphicG;
+        let placeattrNG;
+        // Listen for click events on the map view with debounce
+        const debouncedHitTest = promiseUtils.debounce(async (event) => {
+          const placeGraphic = await performHitTest(event);
+          if (placeGraphic) {
+            console.log(placeGraphic, "Here");
+            placeGraphicG = placeGraphic;
+            placeattrNG = placeGraphic.attributes["_name"];
+
+            checkinbtnincognito.disabled = true;
+            checkinbtn.disabled = true;
+
+            document.getElementById("panelDetails").setAttribute("closed", false);
+            document.getElementById("panelDetails").style.display = "block";
+            document.getElementById("inputContainer").style.display = "block";
+
+            updatePlaceDetailsEveryTime(placeattrNG);
+            const distanceCheck = await measureDistance(
+              userData,
+              placeGraphic
+            );
+            if (distanceCheck.distance > 200) {
+              checkingAlert();
+            } else {
+              document.getElementById("checkinbtn").disabled = false;
+              checkinbtnincognito.disabled = false;
+            }
+
+            placeNameLabel.heading = `${placeGraphic.attributes["_name"]}`;
+            categoryLabel.description = `${placeGraphic.attributes["category_labels"]}`;
+
+            view.goTo(
+              {
+                target: placeGraphic,
+                zoom: 20,
+              },
+              {
+                duration: 2000,
+              }
+            );
+
+            // Use the clicked place graphic in another function
+            // handlePlaceGraphic(placeGraphic);
+          } else {
+            document.getElementById("panelDetails").style.display = "none";
+            document.getElementById("inputContainer").style.display = "none";
+            placeNameLabel.heading = "";
+            categoryLabel.innerHTML = "";
+            alert.remove();
+            view.goTo(
+              {
+                target: view.center,
+                zoom: 15,
+              },
+              {
+                duration: 2000,
+              }
+            );
+          }
+        });
+
+        // Attach the debounced hit test to the click event
+        view.on("click", debouncedHitTest);
+
+        // Define the hitTest function
+        async function performHitTest(event) {
+          try {
+            // Get hit test results only from the vector tile layer
+            const hit = await view.hitTest(event, { include: layer });
+            if (hit.results.length) {
+              // Find the first graphic with the 'esri_place_id' attribute
+              const placeGraphic = hit.results.find(
+                (result) => result.graphic.attributes["esri_place_id"]
+              );
+              if (placeGraphic) {
+                // Return the place graphic to be used elsewhere
+                return placeGraphic.graphic;
+              }
+            }
+            return null; // No relevant graphic found
+          } catch (error) {
+            console.error("Error during hit test:", error);
+            return null;
+          }
+        }
+
+
+        // Function to remove the current check-in
+        async function removeCurrentCheckIn(userData) {
+          let query = checkinLayer.createQuery();
+          query.where = "1=1"; // Query all features
+          checkinLayer.queryFeatures(query).then((result) => {
+            let existingFeatures = result.features.filter((feature) => {
+              return feature.attributes.uniqueID === userData.uniqueID; // Check if the same uid
+            });
+            console.log(existingFeatures, "NNN")
+
+            if (existingFeatures.length > 0) {
+              checkinLayer.applyEdits({
+                deleteFeatures: existingFeatures,
+              }).then(() => {
+                console.log("Old check-ins removed because the new is added.");
+              });
+            }
+          });
+        }
+
+
+        // // Function to remove the current check-in
+        // async function removeCurrentCheckIn() {
+        //   if (currentCheckInFeature) {
+        //     console.log(currentCheckInFeature, "BBBB")
+        //       await checkinLayer.applyEdits({
+        //         deleteFeatures: [currentCheckInFeature]
+        //       });
+        //       currentCheckInFeature = null; // Reset current check-in
+
+        //   }
+        // }
+
+
+        // Example function to handle the clicked place graphic
+        async function handlePlaceGraphic(placeLocation, userData) {
+
+          await removeCurrentCheckIn(userData); // Remove old check-in if it exists
+
+          // Your custom logic with the clicked place graphic
+          console.log("Clicked place graphic:", placeLocation);
+          // Add your code here to work with the graphic
+          checkinbtn.setAttribute("loading", true);
+
+          if (placeLocation) {
+            if (userData.Gender == "Male") {
+              placeattrNG = placeLocation.attributes["_name"];
+              let currentTime = new Date().toISOString(); // Format as ISO string
+              let attributes = {
+                PlaceName: placeLocation.attributes["_name"],
+                UserName: userData.Name,
+                Gender: userData.Gender,
+                UrlProfile: userData.urlProfile,
+                UrlIncognito: incognitoModeImageMale,
+                uniqueID: userData.uniqueID,
+                incognito: "No",
+                CheckInTime: currentTime, // Store timestamp as string
+                profile: userData.profile
+              };
+
+              // Use the static geometry of the place
+              const staticGeo = placeLocation.geometry;
+              const addFeature = new Graphic({
+                geometry: staticGeo,
+                attributes: attributes,
+              });
+
+              checkinLayer
+                .applyEdits({
+                  addFeatures: [addFeature],
+                })
+                .then(async (result) => {
+                  creatingAlertConfirmation(attributes.PlaceName);
+                  await updatePlacesCheckInBtn(placeattrNG);
+                  checkinbtn.removeAttribute("loading");
+                  view.goTo(
+                    {
+                      target: placeLocation,
+                      zoom: 20,
+                    },
+                    {
+                      duration: 2000,
+                    }
+                  );
+                });
+
+            } else if (userData.Gender == "Female") {
+              placeattrNG = placeLocation.attributes["_name"];
+              let currentTime = new Date().toISOString(); // Format as ISO string
+              let attributes = {
+                PlaceName: placeLocation.attributes["_name"],
+                UserName: userData.Name,
+                Gender: userData.Gender,
+                UrlProfile: userData.urlProfile,
+                UrlIncognito: incognitoModeImageFemale,
+                uniqueID: userData.uniqueID,
+                incognito: "No",
+                CheckInTime: currentTime, // Store timestamp as string
+                profile: userData.profile
+              };
+
+              // Use the static geometry of the place
+              const staticGeo = placeLocation.geometry;
+              const addFeature = new Graphic({
+                geometry: staticGeo,
+                attributes: attributes,
+              });
+
+              checkinLayer
+                .applyEdits({
+                  addFeatures: [addFeature],
+                })
+                .then(async (result) => {
+                  creatingAlertConfirmation(attributes.PlaceName);
+                  await updatePlacesCheckInBtn(placeattrNG);
+                  checkinbtn.removeAttribute("loading");
+                  view.goTo(
+                    {
+                      target: placeLocation,
+                      zoom: 20,
+                    },
+                    {
+                      duration: 2000,
+                    }
+                  );
+                });
+            } else {
+              placeattrNG = placeLocation.attributes["_name"];
+              let currentTime = new Date().toISOString(); // Format as ISO string
+              let attributes = {
+                PlaceName: placeLocation.attributes["_name"],
+                UserName: userData.Name,
+                Gender: userData.Gender,
+                UrlProfile: userData.urlProfile,
+                UrlIncognito: incognitoModeImageOther,
+                uniqueID: userData.uniqueID,
+                incognito: "No",
+                CheckInTime: currentTime, // Store timestamp as string
+                profile: userData.profile
+              };
+
+              // Use the static geometry of the place
+              const staticGeo = placeLocation.geometry;
+              const addFeature = new Graphic({
+                geometry: staticGeo,
+                attributes: attributes,
+              });
+              checkinLayer
+                .applyEdits({
+                  addFeatures: [addFeature],
+                })
+                .then(async (result) => {
+                  creatingAlertConfirmation(attributes.PlaceName);
+                  await updatePlacesCheckInBtn(placeattrNG);
+                  checkinbtn.removeAttribute("loading");
+                  view.goTo(
+                    {
+                      target: placeLocation,
+                      zoom: 20,
+                    },
+                    {
+                      duration: 2000,
+                    }
+                  );
+                });
+            }
+          }
+
+
+        }
+
+        // Example function to handle the clicked place graphic
+        async function handlePlaceGraphicIncognito(placeLocation, userData) {
+          await removeCurrentCheckIn(userData); // Remove old check-in if it exists
+          // Your custom logic with the clicked place graphic
+          console.log("Clicked place graphic:", placeLocation);
+          // Add your code here to work with the graphic
+          checkinbtnincognito.setAttribute("loading", true);
+
+          if (placeLocation) {
+            if (userData.Gender == "Male") {
+              placeattrNG = placeLocation.attributes["_name"];
+              let currentTime = new Date().toISOString(); // Format as ISO string
+              let attributes = {
+                PlaceName: placeLocation.attributes["_name"],
+                UserName: userData.Name,
+                Gender: userData.Gender,
+                UrlProfile: userData.urlProfile,
+                UrlIncognito: incognitoModeImageMale,
+                uniqueID: userData.uniqueID,
+                incognito: "Yes",
+                CheckInTime: currentTime, // Store timestamp as string
+                profile: userData.profile
+              };
+
+              // Use the static geometry of the place
+              const staticGeo = placeLocation.geometry;
+              const addFeature = new Graphic({
+                geometry: staticGeo,
+                attributes: attributes,
+              });
+
+              checkinLayer
+                .applyEdits({
+                  addFeatures: [addFeature],
+                })
+                .then(async (result) => {
+                  creatingAlertConfirmation(attributes.PlaceName);
+                  await updateCheckInIncognitoBtn(placeattrNG);
+                  checkinbtnincognito.removeAttribute("loading");
+                  view.goTo(
+                    {
+                      target: placeLocation,
+                      zoom: 20,
+                    },
+                    {
+                      duration: 2000,
+                    }
+                  );
+                });
+
+
+            } else if (userData.Gender == "Female") {
+              placeattrNG = placeLocation.attributes["_name"];
+              let currentTime = new Date().toISOString(); // Format as ISO string
+              let attributes = {
+                PlaceName: placeLocation.attributes["_name"],
+                UserName: userData.Name,
+                Gender: userData.Gender,
+                UrlProfile: userData.urlProfile,
+                UrlIncognito: incognitoModeImageFemale,
+                uniqueID: userData.uniqueID,
+                incognito: "Yes",
+                CheckInTime: currentTime, // Store timestamp as string
+                profile: userData.profile
+              };
+
+              // Use the static geometry of the place
+              const staticGeo = placeLocation.geometry;
+              const addFeature = new Graphic({
+                geometry: staticGeo,
+                attributes: attributes,
+              });
+
+              checkinLayer
+                .applyEdits({
+                  addFeatures: [addFeature],
+                })
+                .then(async (result) => {
+                  creatingAlertConfirmation(attributes.PlaceName);
+                  await updateCheckInIncognitoBtn(placeattrNG);
+                  checkinbtnincognito.removeAttribute("loading");
+                  view.goTo(
+                    {
+                      target: placeLocation,
+                      zoom: 20,
+                    },
+                    {
+                      duration: 2000,
+                    }
+                  );
+                });
+            } else {
+              placeattrNG = placeLocation.attributes["_name"];
+              let currentTime = new Date().toISOString(); // Format as ISO string
+              let attributes = {
+                PlaceName: placeLocation.attributes["_name"],
+                UserName: userData.Name,
+                Gender: userData.Gender,
+                UrlProfile: userData.urlProfile,
+                UrlIncognito: incognitoModeImageOther,
+                uniqueID: userData.uniqueID,
+                incognito: "Yes",
+                CheckInTime: currentTime, // Store timestamp as string
+                profile: userData.profile
+              };
+
+              // Use the static geometry of the place
+              const staticGeo = placeLocation.geometry;
+              const addFeature = new Graphic({
+                geometry: staticGeo,
+                attributes: attributes,
+              });
+              checkinLayer
+                .applyEdits({
+                  addFeatures: [addFeature],
+                })
+                .then(async (result) => {
+                  creatingAlertConfirmation(attributes.PlaceName);
+                  await updateCheckInIncognitoBtn(placeattrNG);
+                  checkinbtnincognito.removeAttribute("loading");
+                  view.goTo(
+                    {
+                      target: placeLocation,
+                      zoom: 20,
+                    },
+                    {
+                      duration: 2000,
+                    }
+                  );
+                });
+            }
+          }
+
+
+        }
+
+        if (checkinbtn) {
+          // Attach the event listener to the button, passing in the current placeGraphic
+          checkinbtn.addEventListener("click", () => {
+            checkinbtnincognito.disabled = true;
+            handlePlaceGraphic(placeGraphicG, userData);
+          });
+        }
+
+        if (checkinbtnincognito) {
+          // Attach the event listener to the button, passing in the current placeGraphic
+          checkinbtnincognito.addEventListener("click", () => {
+            checkinbtn.disabled = true;
+            handlePlaceGraphicIncognito(placeGraphicG, userData);
+          });
+        }
+
+
+        function removeOldCheckIns() {
+          let query = checkinLayer.createQuery();
+          query.where = "1=1"; // Query all features
+          console.log("Checking in now...");
+          checkinLayer.queryFeatures(query).then((result) => {
+            let now = new Date();
+            let featuresToDelete = result.features.filter((feature) => {
+              let checkInTime = new Date(feature.attributes.CheckInTime); // Convert from string
+              let elapsed = (now - checkInTime) / 1000 / 60; // Convert milliseconds to minutes
+              return elapsed > 60; // Check if older than 1 hour
+            });
+
+            if (featuresToDelete.length > 0) {
+              checkinLayer.applyEdits({
+                deleteFeatures: featuresToDelete,
+              }).then(() => {
+                console.log("Old check-ins removed.");
+              });
+            }
+          });
+        }
+
+        // Set up periodic check every minute
+        setInterval(removeOldCheckIns, 60 * 1000); // 60 * 1000 ms = 1 minute
+
+
+
+        
+        view.when().then(() => {
+          // When the view is ready, clone the heatmap renderer
+          // from the only layer in the web map
+          const heatmapRenderer = checkinLayer.renderer.clone();
+
+          // The following simple renderer will render all points as simple
+          // markers at certain scales
+          const simpleRenderer = {
+            type: "simple",
+            symbol: {
+              type: "picture-marker", // autocasts as new PictureMarkerSymbol()
+              url: "https://daraobeirne.github.io/kisspng-drawing-pin-world-map-logo-push-vector-5ae029f6ddeaf4.198342921524640246909.png",
+              width: "30px",
+              height: "30px",
+            },
+          };
+          const graphicsLayerLabels = new GraphicsLayer();
+          view.map.add(graphicsLayerLabels);
+
+          // When the scale is larger than 1:72,224 (zoomed in passed that scale),
+          // then switch from a heatmap renderer to a simple renderer. When zoomed
+          // out beyond that scale, switch back to the heatmap renderer
+          reactiveUtils.watch(
+            () => view.scale,
+            (scale) => {
+              checkinLayer.renderer =
+                scale <= 2224 ? simpleRenderer : heatmapRenderer;
+              if (scale <= 2224) {
+                checkinLayer.renderer = simpleRenderer;
+                // graphicsLayerLabels.visible = true;
+              } else {
+                checkinLayer.renderer = heatmapRenderer;
+                // graphicsLayerLabels.visible = false;
+              }
+            }
+          );
+
+          // Count features and create labels
+          const query = checkinLayer.createQuery();
+          query.where = "1=1"; // Adjust the query if needed
+          checkinLayer
+            .queryFeatures(query)
+            .then((results) => {
+              const features = results.features;
+              const locationCountMap = {};
+
+              // Calculate counts for each location
+              features.forEach((feature) => {
+                const location = feature.geometry; // Assume that geometry encodes the location
+
+                // Added check for valid geometry
+                if (!location || !location.x || !location.y) {
+                  return; // Skip invalid features
+                }
+
+                const locationKey = `${location.x},${location.y}`;
+                if (!locationCountMap[locationKey]) {
+                  locationCountMap[locationKey] = {
+                    count: 0,
+                    location: location,
+                  };
+                }
+                locationCountMap[locationKey].count++;
+              });
+
+              // Create label graphics
+              for (const key in locationCountMap) {
+                const value = locationCountMap[key];
+
+                // Another check to ensure valid value
+                if (!value || !value.count || !value.location) {
+                  continue; // Skip invalid entries
+                }
+
+                const textSymbol = {
+                  type: "text", // autocasts as new TextSymbol()
+                  color: "OrangeRed",
+                  // haloColor: "white",
+                  // haloSize: "1px",
+                  xoffset: -17,
+                  yoffset: 17,
+                  text: `+${value.count}`, // Prepend + to the count
+                  font: {
+                    // autocast as new Font()
+                    size: 12,
+                    family: "sans-serif",
+                    weight: "bold",
+                  },
+                };
+
+                const pointGraphic = new Graphic({
+                  geometry: value.location,
+                  symbol: textSymbol,
+                });
+
+                graphicsLayerLabels.add(pointGraphic);
+              }
+            })
+            .catch((error) => {
+              console.error("Feature query failed: ", error);
+            });
+        });
+        
 
 
 
 
 
+        //add widgets
+        await addWidgets()
+          .then(([view, displayMap]) => {
+            console.log(
+              "Widgets Returned From Require Scope",
+              view,
+              displayMap
+            );
+            // You can work with the view object here
+          })
+          .catch((error) => {
+            // Handle any errors here
+          });
 
+        return [view, displayMap]; // You can return the view object
+      } catch (error) {
+        console.error("Error initializing map:", error);
+        throw error; // Rethrow the error to handle it further, if needed
+      }
+    }
 
+    window.onload = () => {
+      initializeMapPlaces(userData);
+    };
 
+    async function addWidgets() {
+      try {
+        // await initializeMap();
 
+        const [
+          Fullscreen,
+          BasemapGallery,
+          Expand,
+          ScaleBar,
+          AreaMeasurement2D,
+          Search,
+          Home,
+          LayerList,
+          BasemapToggle,
+        ] = await Promise.all([
+          loadModule("esri/widgets/Fullscreen"),
+          loadModule("esri/widgets/BasemapGallery"),
+          loadModule("esri/widgets/Expand"),
+          loadModule("esri/widgets/ScaleBar"),
+          loadModule("esri/widgets/AreaMeasurement2D"),
+          loadModule("esri/widgets/Search"),
+          loadModule("esri/widgets/Home"),
+          loadModule("esri/widgets/LayerList"),
+          loadModule("esri/widgets/BasemapToggle"),
+        ]);
 
+        var search = new Search({
+          //Add Search widget
+          view: view,
+        });
+        view.ui.add(search, { position: "top-left", index: 0 }); //Add to the map
 
-  <script src="script.js"></script>
+        var homeWidget = new Home({
+          view: view,
+        });
+        view.ui.add(homeWidget, "top-left");
 
+        await view.when();
+
+        return [view, displayMap]; // You can return the view object
+      } catch (error) {
+        console.error("Error initializing map:", error);
+        throw error; // Rethrow the error to handle it further, if needed
+      }
+    }
+  </script>
 </body>
 
 </html>
