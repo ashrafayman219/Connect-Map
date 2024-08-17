@@ -106,7 +106,9 @@
   }
 
   #checkinbtn,
-  #checkinbtnincognito {
+  #checkinbtnincognito,
+  #locationbtn,
+  #locationbtn01 {
     --calcite-color-brand: #F09C13;
     --calcite-color-brand-hover: #c98314;
   }
@@ -212,7 +214,9 @@
   <div id="viewDiv"></div>
 
   <div id="inputContainer">
-    <calcite-panel icon-start="pins" class="esri-widget esri-component" heading="" id="panelDetails" closable>
+    <calcite-panel icon-start="pins" description="" class="esri-widget esri-component" heading="" id="panelDetails"
+      closable>
+      <calcite-action icon="gps-on" text="location" id="locationbtn01" round slot="header-actions-end"></calcite-action>
       <calcite-action scale="m" icon="pins" text="Favorite" slot="header-actions-start"></calcite-action>
       <calcite-block id="categoryLabel" class="hide" heading="Categories" scale="l" description="">
         <calcite-icon scale="m" slot="icon" icon="select-category"></calcite-icon>
@@ -247,6 +251,7 @@
     </div>
 
     <section>
+      <calcite-button icon-start="gps-on" id="locationbtn" label="Go to your location" round></calcite-button>
       <calcite-button icon-start="check-shield" width="full" id="checkinbtn" round>Check in</calcite-button>
       <calcite-button icon-start="check-shield" width="full" id="checkinbtnincognito" round>Check in
         incognito</calcite-button>
@@ -315,6 +320,7 @@
           GraphicsLayer,
           geodesicUtils,
           Point,
+          locator
         ] = await Promise.all([
           loadModule("esri/config"),
           loadModule("esri/Map"),
@@ -335,6 +341,7 @@
           loadModule("esri/layers/GraphicsLayer"),
           loadModule("esri/geometry/support/geodesicUtils"),
           loadModule("esri/geometry/Point"),
+          loadModule("esri/rest/locator"),
         ]);
 
         const apiKey =
@@ -457,6 +464,44 @@
         //   });
         // }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // // Wait for the view to be fully initialized
+        // view.when(function() {
+        //   // Wait for 5 seconds (5000 milliseconds)
+        //   setTimeout(() => {
+        //     // Change the view to a new center point after 5 seconds
+        //     view.goTo(
+        //         {
+        //           center: [userData.Long, userData.Lat],
+        //           zoom: 15,
+        //         },
+        //         {
+        //           duration: 2000,
+        //         }
+        //       );
+        //   }, 5000);
+        // });
+
+
+
         let alert = document.createElement("calcite-alert");
 
         function creatingAlertConfirmation(placeName) {
@@ -501,9 +546,32 @@
         // Global variable to track current check-in feature
         let currentCheckInFeature = null;
 
+        let locationbtn = document.getElementById('locationbtn');
+        let locationbtn01 = document.getElementById('locationbtn01');
 
+        locationbtn.addEventListener('click', () => {
+          view.goTo(
+            {
+              center: [userData.Long, userData.Lat],
+              zoom: 15,
+            },
+            {
+              duration: 2000,
+            }
+          );
+        })
 
-
+        locationbtn01.addEventListener('click', () => {
+          view.goTo(
+            {
+              center: [userData.Long, userData.Lat],
+              zoom: 15,
+            },
+            {
+              duration: 2000,
+            }
+          );
+        })
         let checkinbtn = document.getElementById("checkinbtn");
 
         function updateCheckInIncognitoBtn(placeName) {
@@ -824,10 +892,33 @@
 
         let placeGraphicG;
         let placeattrNG;
+        const serviceUrl = "http://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer";
+
         // Listen for click events on the map view with debounce
         const debouncedHitTest = promiseUtils.debounce(async (event) => {
           const placeGraphic = await performHitTest(event);
           if (placeGraphic) {
+
+            const params = {
+              location: event.mapPoint
+            };
+
+            locator.locationToAddress(serviceUrl, params).then(
+              function (response) {
+                // Show the address found
+                const address = response.address;
+                console.log(address, "Addess founded");
+                panel.description = address;
+                // showAddress(address, evt.mapPoint);
+              },
+              function (err) {
+                console.log("No address founded....");
+                panel.description = "";
+                // Show no address found
+                // showAddress("No address found.", evt.mapPoint);
+              }
+            );
+
             console.log(placeGraphic, "Here");
             placeGraphicG = placeGraphic;
             placeattrNG = placeGraphic.attributes["_name"];
@@ -1261,8 +1352,10 @@
 
 
 
-        
+
         view.when().then(() => {
+
+
           // When the view is ready, clone the heatmap renderer
           // from the only layer in the web map
           const heatmapRenderer = checkinLayer.renderer.clone();
@@ -1364,7 +1457,7 @@
               console.error("Feature query failed: ", error);
             });
         });
-        
+
 
 
 
