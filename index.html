@@ -266,15 +266,12 @@
     let userData = {
       Name: "Jannette01",
       Gender: "Female",
-      // urlProfile: "https://i.pinimg.com/474x/9d/97/3e/9d973e10d026bd0359062439989b8eaf.jpg", // Avatar
       urlProfile: "https://78041cf8c2d97f2a2e766616ac08f96f.cdn.bubble.io/f1723292454450x898610997668299600/59519E65-F022-45BD-A529-E366B19554A0.jpeg", // Jannette
       Long: -118.49373400210847,
       Lat: 34.01341278645862,
       profile: "https://connectdating.page.link/yQ4Y",
-      uniqueID: "1723548726491x502588139975268740"
-      // uniqueID: "1723548726491x502588139975268741",
-      // uniqueID: "1723548726491x502588139975268749",
-      // uniqueID: "1723548726491x502588139975268745",
+      uniqueID: "1723548726491x502588139975268740",
+      randomText: "AASVLFRESGHYTRVFDEDHTHTF"
     };
 
     let incognitoModeImageMale =
@@ -384,7 +381,7 @@
         // Create featurelayer from feature service
         const checkinLayer = new FeatureLayer({
           // URL to the service
-          url: "https://services3.arcgis.com/AtFD5NjBs72VpMjN/arcgis/rest/services/checkinTest077/FeatureServer/0",
+          url: "https://services6.arcgis.com/iJvPfNHiyOlxpESW/arcgis/rest/services/CheckinLayer/FeatureServer/0",
           renderer: renderer,
         });
 
@@ -539,7 +536,6 @@
         // }
         // fetchLayerFields(checkinLayer);
 
-
         let checkinbtnincognito = document.getElementById("checkinbtnincognito");
 
 
@@ -597,48 +593,27 @@
 
             // Add user photos and names
             result.features.forEach((feature) => {
-              // let userPhotoContainer = document.createElement("div");
-              // userPhotoContainer.className = "user-photo";
-
-              // let userPhoto = document.createElement("img");
-              // userPhoto.src =
-              //   feature.attributes.UrlProfile ||
-              //   "default_placeholder.png"; // Provide a fallback;
-              // userPhoto.alt = feature.attributes.UserName;
-              // userPhoto.className = "circle-photo";
-
-              // let userName = document.createElement("div");
-              // userName.innerText = feature.attributes.UserName;
-
-              // userPhotoContainer.appendChild(userPhoto);
-              // userPhotoContainer.appendChild(userName);
-              // photosContainer.appendChild(userPhotoContainer);
-
-              // console.log(feature, "NNNNN")
-
               if (feature.attributes.uniqueID == userData.uniqueID) {
                 console.log("incognito");
                 let userPhotoContainer = document.createElement("div");
                 userPhotoContainer.className = "user-photo";
-
-                // Create the link element
-                let link = document.createElement("a");
-                link.href = feature.attributes.profile || "#"; // Use the ProfileUrl attribute
-                link.target = "_blank"; // Open the link in a new tab
 
                 let userPhoto = document.createElement("img");
                 userPhoto.src = feature.attributes.UrlIncognito || "default_placeholder.png"; // Provide a fallback;
                 userPhoto.alt = feature.attributes.UserName;
                 userPhoto.className = "circle-photo";
 
-                // Append the image to the link
-                link.appendChild(userPhoto);
+                // Add event listener to call bubble_fn_trigger() on click with a random string
+                userPhoto.addEventListener("click", () => {
+                  let randomString = feature.attributes.randomText;
+                  bubble_fn_trigger(randomString);
+                });
 
                 let userName = document.createElement("div");
                 // userName.innerText = feature.attributes.UserName;
                 userName.innerText = "";
 
-                userPhotoContainer.appendChild(link);
+                userPhotoContainer.appendChild(userPhoto);
                 userPhotoContainer.appendChild(userName);
                 photosContainer.appendChild(userPhotoContainer);
               }
@@ -695,50 +670,27 @@
                 let userPhotoContainer = document.createElement("div");
                 userPhotoContainer.className = "user-photo";
 
-                // Create the link element
-                let link = document.createElement("a");
-                link.href = feature.attributes.profile || "#"; // Use the ProfileUrl attribute
-                link.target = "_blank"; // Open the link in a new tab
-
                 let userPhoto = document.createElement("img");
                 userPhoto.src = feature.attributes.UrlProfile || "default_placeholder.png"; // Provide a fallback;
                 userPhoto.alt = feature.attributes.UserName;
                 userPhoto.className = "circle-photo";
 
-                // Append the image to the link
-                link.appendChild(userPhoto);
+                // Add event listener to call bubble_fn_trigger() on click with a random string
+                userPhoto.addEventListener("click", () => {
+                  let randomString = feature.attributes.randomText;
+                  bubble_fn_trigger(randomString);
+                });
 
                 let userName = document.createElement("div");
                 userName.innerText = feature.attributes.UserName;
 
-                userPhotoContainer.appendChild(link);
+                userPhotoContainer.appendChild(userPhoto);
                 userPhotoContainer.appendChild(userName);
                 photosContainer.appendChild(userPhotoContainer);
               }
-
-              // else {
-              //   console.log("no profile photo");
-              //   let userPhotoContainer = document.createElement("div");
-              //   userPhotoContainer.className = "user-photo";
-
-              //   let userPhoto = document.createElement("img");
-              //   userPhoto.src = feature.attributes.UrlIncognito || "default_placeholder.png"; // Provide a fallback;
-              //   userPhoto.alt = feature.attributes.UserName;
-              //   userPhoto.className = "circle-photo";
-
-              //   let userName = document.createElement("div");
-              //   userName.innerText = feature.attributes.UserName;
-
-              //   userPhotoContainer.appendChild(userPhoto);
-              //   userPhotoContainer.appendChild(userName);
-              //   photosContainer.appendChild(userPhotoContainer);
-              // }
             });
           });
         }
-
-
-
 
         // function updatePlaceDetailsEveryTime(placeName) {
         //   let query = checkinLayer.createQuery();
@@ -783,8 +735,6 @@
         // }
 
 
-
-
         function updatePlaceDetailsEveryTime(placeName) {
           let query = checkinLayer.createQuery();
           query.where = `PlaceName = '${placeName}'`;
@@ -812,23 +762,21 @@
                 let userPhotoContainer = document.createElement("div");
                 userPhotoContainer.className = "user-photo";
 
-                // Create the link element
-                let link = document.createElement("a");
-                link.href = feature.attributes.profile || "#"; // Use the ProfileUrl attribute
-                link.target = "_blank"; // Open the link in a new tab
-
                 let userPhoto = document.createElement("img");
                 userPhoto.src = feature.attributes.UrlProfile
                 userPhoto.alt = feature.attributes.UserName;
                 userPhoto.className = "circle-photo";
 
-                // Append the image to the link
-                link.appendChild(userPhoto);
+                // Add event listener to call bubble_fn_trigger() on click with a random string
+                userPhoto.addEventListener("click", () => {
+                  let randomString = feature.attributes.randomText;
+                  bubble_fn_trigger(randomString);
+                });
 
                 let userName = document.createElement("div");
                 userName.innerText = feature.attributes.UserName;
 
-                userPhotoContainer.appendChild(link);
+                userPhotoContainer.appendChild(userPhoto);
                 userPhotoContainer.appendChild(userName);
                 photosContainer.appendChild(userPhotoContainer);
               } else {
@@ -1045,6 +993,20 @@
           // Add your code here to work with the graphic
           checkinbtn.setAttribute("loading", true);
 
+          // async function generateRandomString(length = 30) {
+          //   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+          //   let result = '';
+          //   for (let i = 0; i < length; i++) {
+          //     const randomIndex = Math.floor(Math.random() * characters.length);
+          //     result += characters[randomIndex];
+          //   }
+          //   return result;
+          // }
+
+          // // Example usage:
+          // const randomString = await generateRandomString();
+          // console.log(randomString);
+
           if (placeLocation) {
             if (userData.Gender == "Male") {
               placeattrNG = placeLocation.attributes["_name"];
@@ -1058,7 +1020,8 @@
                 uniqueID: userData.uniqueID,
                 incognito: "No",
                 CheckInTime: currentTime, // Store timestamp as string
-                profile: userData.profile
+                profile: userData.profile,
+                randomText: userData.randomText
               };
 
               // Use the static geometry of the place
@@ -1099,7 +1062,8 @@
                 uniqueID: userData.uniqueID,
                 incognito: "No",
                 CheckInTime: currentTime, // Store timestamp as string
-                profile: userData.profile
+                profile: userData.profile,
+                randomText: userData.randomText
               };
 
               // Use the static geometry of the place
@@ -1139,7 +1103,8 @@
                 uniqueID: userData.uniqueID,
                 incognito: "No",
                 CheckInTime: currentTime, // Store timestamp as string
-                profile: userData.profile
+                profile: userData.profile,
+                randomText: userData.randomText
               };
 
               // Use the static geometry of the place
@@ -1180,6 +1145,20 @@
           // Add your code here to work with the graphic
           checkinbtnincognito.setAttribute("loading", true);
 
+          // async function generateRandomString(length = 30) {
+          //   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+          //   let result = '';
+          //   for (let i = 0; i < length; i++) {
+          //     const randomIndex = Math.floor(Math.random() * characters.length);
+          //     result += characters[randomIndex];
+          //   }
+          //   return result;
+          // }
+
+          // // Example usage:
+          // const randomString = await generateRandomString();
+          // console.log(randomString);
+
           if (placeLocation) {
             if (userData.Gender == "Male") {
               placeattrNG = placeLocation.attributes["_name"];
@@ -1193,7 +1172,8 @@
                 uniqueID: userData.uniqueID,
                 incognito: "Yes",
                 CheckInTime: currentTime, // Store timestamp as string
-                profile: userData.profile
+                profile: userData.profile,
+                randomText: userData.randomText
               };
 
               // Use the static geometry of the place
@@ -1235,7 +1215,8 @@
                 uniqueID: userData.uniqueID,
                 incognito: "Yes",
                 CheckInTime: currentTime, // Store timestamp as string
-                profile: userData.profile
+                profile: userData.profile,
+                randomText: userData.randomText
               };
 
               // Use the static geometry of the place
@@ -1275,7 +1256,8 @@
                 uniqueID: userData.uniqueID,
                 incognito: "Yes",
                 CheckInTime: currentTime, // Store timestamp as string
-                profile: userData.profile
+                profile: userData.profile,
+                randomText: userData.randomText
               };
 
               // Use the static geometry of the place
