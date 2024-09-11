@@ -468,32 +468,31 @@
 
 
 
-        let customLocation = new Point({
-          longitude: userData.Long,
-          latitude: userData.Lat
-        });
+        // let customLocation = new Point({
+        //   longitude: userData.Long,
+        //   latitude: userData.Lat
+        // });
 
-        let locationSymbol = new SimpleMarkerSymbol({
-          color: [0,122,194,1],          // Fill color
-          size: "14px",           // Marker size
-          outline: {
-            color: "#ffffff",     // Outline color
-            width: "2px"          // Outline width
-          }
-        })
-        // Add the point to the map as a graphic
-        const locationGraphic = new Graphic({
-          geometry: customLocation,
-          symbol: locationSymbol
-        });
+        // let locationSymbol = new SimpleMarkerSymbol({
+        //   color: [0,122,194,1],          // Fill color
+        //   size: "14px",           // Marker size
+        //   outline: {
+        //     color: "#ffffff",     // Outline color
+        //     width: "2px"          // Outline width
+        //   }
+        // })
+        // // Add the point to the map as a graphic
+        // const locationGraphic = new Graphic({
+        //   geometry: customLocation,
+        //   symbol: locationSymbol
+        // });
 
-        view.graphics.add(locationGraphic);
+        // view.graphics.add(locationGraphic);
 
 
         // Create the Track widget
         const track = new Track({
           view: view,
-          goToLocationEnabled: false // Disable automatic goToLocation behavior
         });
 
         // Add Track widget to the UI
@@ -503,37 +502,37 @@
 
 
         view.when(() => {
-          let prevLocation = customLocation;
+          // let prevLocation = customLocation;
 
-          // Simulate tracking to the custom location
-          track.on("track", () => {
-            const location = customLocation;
+          // // Simulate tracking to the custom location
+          // track.on("track", () => {
+          //   const location = customLocation;
 
-            // Control how the map navigates to the location
-            view.goTo({
-              center: location,
-              tilt: 50,
-              scale: 2500,
-              heading: 360 - getHeading(location, prevLocation),  // Only for SceneView
-              rotation: 360 - getHeading(location, prevLocation)   // Only for MapView
-            }).catch((error) => {
-              if (error.name != "AbortError") {
-                console.error(error);
-              }
-            });
+          //   // Control how the map navigates to the location
+          //   view.goTo({
+          //     center: location,
+          //     tilt: 50,
+          //     scale: 2500,
+          //     heading: 360 - getHeading(location, prevLocation),  // Only for SceneView
+          //     rotation: 360 - getHeading(location, prevLocation)   // Only for MapView
+          //   }).catch((error) => {
+          //     if (error.name != "AbortError") {
+          //       console.error(error);
+          //     }
+          //   });
 
-            prevLocation = location.clone();
-          });
+          //   prevLocation = location.clone();
+          // });
 
           // Start the Track widget manually
           track.start();
         });
 
-        // Function to calculate heading between two points
-        function getHeading(point, oldPoint) {
-          const angleInDegrees = (Math.atan2(point.y - oldPoint.y, point.x - oldPoint.x) * 180) / Math.PI;
-          return -90 + angleInDegrees;
-        }
+        // // Function to calculate heading between two points
+        // function getHeading(point, oldPoint) {
+        //   const angleInDegrees = (Math.atan2(point.y - oldPoint.y, point.x - oldPoint.x) * 180) / Math.PI;
+        //   return -90 + angleInDegrees;
+        // }
 
 
 
