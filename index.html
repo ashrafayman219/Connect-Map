@@ -263,6 +263,7 @@
     document.getElementById("inputContainer").style.display = "none";
     var displayMap;
     let view;
+
     let userData = {
       Name: "Jannette01",
       Gender: "Female",
@@ -317,7 +318,9 @@
           GraphicsLayer,
           geodesicUtils,
           Point,
-          locator
+          locator,
+          Track,
+          SimpleMarkerSymbol
         ] = await Promise.all([
           loadModule("esri/config"),
           loadModule("esri/Map"),
@@ -339,6 +342,8 @@
           loadModule("esri/geometry/support/geodesicUtils"),
           loadModule("esri/geometry/Point"),
           loadModule("esri/rest/locator"),
+          loadModule("esri/widgets/Track"),
+          loadModule("esri/symbols/SimpleMarkerSymbol"),
         ]);
 
         const apiKey =
@@ -437,7 +442,7 @@
             minScale: 72223.81928607849,
           },
         });
-
+        const graphicsLayerLabels01 = new GraphicsLayer();
         await view.when();
         view.ui.add("titleDiv");
         // get the places layer from the basemap
@@ -463,16 +468,72 @@
 
 
 
+        let customLocation = new Point({
+          longitude: userData.Long,
+          latitude: userData.Lat
+        });
+
+        let locationSymbol = new SimpleMarkerSymbol({
+          color: [0,122,194,1],          // Fill color
+          size: "14px",           // Marker size
+          outline: {
+            color: "#ffffff",     // Outline color
+            width: "2px"          // Outline width
+          }
+        })
+        // Add the point to the map as a graphic
+        const locationGraphic = new Graphic({
+          geometry: customLocation,
+          symbol: locationSymbol
+        });
+
+        view.graphics.add(locationGraphic);
+
+
+        // Create the Track widget
+        const track = new Track({
+          view: view,
+          goToLocationEnabled: false // Disable automatic goToLocation behavior
+        });
+
+        // Add Track widget to the UI
+        view.ui.add(track, "top-left");
 
 
 
 
+        view.when(() => {
+          let prevLocation = customLocation;
 
+          // Simulate tracking to the custom location
+          track.on("track", () => {
+            const location = customLocation;
 
+            // Control how the map navigates to the location
+            view.goTo({
+              center: location,
+              tilt: 50,
+              scale: 2500,
+              heading: 360 - getHeading(location, prevLocation),  // Only for SceneView
+              rotation: 360 - getHeading(location, prevLocation)   // Only for MapView
+            }).catch((error) => {
+              if (error.name != "AbortError") {
+                console.error(error);
+              }
+            });
 
+            prevLocation = location.clone();
+          });
 
+          // Start the Track widget manually
+          track.start();
+        });
 
-
+        // Function to calculate heading between two points
+        function getHeading(point, oldPoint) {
+          const angleInDegrees = (Math.atan2(point.y - oldPoint.y, point.x - oldPoint.x) * 180) / Math.PI;
+          return -90 + angleInDegrees;
+        }
 
 
 
@@ -505,6 +566,13 @@
           alert.remove();
           alert = document.createElement("calcite-alert");
           alert.kind = "info";
+          // alert.style.setProperty('--calcite-color-status-warning', 'Red');
+          alert.addEventListener("calciteAlertOpen", () => {
+            const container = alert.shadowRoot.querySelector('.container--top');
+            if (container) {
+              container.style.backgroundColor = '#f0c259';
+            }
+          });
           alert.open = true;
           alert.icon = "register";
           alert.setAttribute("auto-close", "true");
@@ -513,8 +581,10 @@
           let divMessage = document.createElement("div");
           divTitle.slot = "title";
           divTitle.innerHTML = `You have successfully checked in at ${placeName}.`;
+          divTitle.style.color = "black";
           divMessage.slot = "message";
           divMessage.innerHTML = `Your check in will last for 1 hour.`;
+          divMessage.style.color = "black";
           alert.append(divTitle);
           alert.append(divMessage);
           view.ui.add(alert);
@@ -822,6 +892,12 @@
           checkinbtnincognito.disabled = true;
           alertDist = document.createElement("calcite-alert");
           alertDist.kind = "brand";
+          alertDist.addEventListener("calciteAlertOpen", () => {
+            const container = alertDist.shadowRoot.querySelector('.container--top');
+            if (container) {
+              container.style.backgroundColor = '#f0c259';
+            }
+          });
           alertDist.label = "Danger alert";
           alertDist.icon = "smile";
           alertDist.open = true;
@@ -1038,6 +1114,7 @@
                 .then(async (result) => {
                   creatingAlertConfirmation(attributes.PlaceName);
                   await updatePlacesCheckInBtn(placeattrNG);
+                  checkinLayer.refresh();  // Refresh the layer after edits
                   checkinbtn.removeAttribute("loading");
                   view.goTo(
                     {
@@ -1048,6 +1125,7 @@
                       duration: 2000,
                     }
                   );
+                  updateLabelGraphics();  // Call function to update labels
                 });
 
             } else if (userData.Gender == "Female") {
@@ -1080,6 +1158,7 @@
                 .then(async (result) => {
                   creatingAlertConfirmation(attributes.PlaceName);
                   await updatePlacesCheckInBtn(placeattrNG);
+                  checkinLayer.refresh();  // Refresh the layer after edits
                   checkinbtn.removeAttribute("loading");
                   view.goTo(
                     {
@@ -1090,6 +1169,7 @@
                       duration: 2000,
                     }
                   );
+                  updateLabelGraphics();  // Call function to update labels
                 });
             } else {
               placeattrNG = placeLocation.attributes["_name"];
@@ -1120,6 +1200,7 @@
                 .then(async (result) => {
                   creatingAlertConfirmation(attributes.PlaceName);
                   await updatePlacesCheckInBtn(placeattrNG);
+                  checkinLayer.refresh();  // Refresh the layer after edits
                   checkinbtn.removeAttribute("loading");
                   view.goTo(
                     {
@@ -1130,6 +1211,7 @@
                       duration: 2000,
                     }
                   );
+                  updateLabelGraphics();  // Call function to update labels
                 });
             }
           }
@@ -1324,6 +1406,7 @@
                 deleteFeatures: featuresToDelete,
               }).then(() => {
                 console.log("Old check-ins removed.");
+                updateLabelGraphics(); // Update label graphics after removing old check-ins
               });
             }
           });
@@ -1333,53 +1416,19 @@
         setInterval(removeOldCheckIns, 60 * 1000); // 60 * 1000 ms = 1 minute
 
 
+        const graphicsLayerLabels = new GraphicsLayer();
+        view.map.add(graphicsLayerLabels);
 
+        function updateLabelGraphics() {
+          // Clear existing label graphics
+          graphicsLayerLabels.removeAll();
 
-        view.when().then(() => {
+          // Ensure a little wait time for the refresh before adding new labels
+          setTimeout(() => {
+            const query = checkinLayer.createQuery();
+            query.where = "1=1"; // Adjust the query if needed
 
-
-          // When the view is ready, clone the heatmap renderer
-          // from the only layer in the web map
-          const heatmapRenderer = checkinLayer.renderer.clone();
-
-          // The following simple renderer will render all points as simple
-          // markers at certain scales
-          const simpleRenderer = {
-            type: "simple",
-            symbol: {
-              type: "picture-marker", // autocasts as new PictureMarkerSymbol()
-              url: "https://daraobeirne.github.io/kisspng-drawing-pin-world-map-logo-push-vector-5ae029f6ddeaf4.198342921524640246909.png",
-              width: "30px",
-              height: "30px",
-            },
-          };
-          const graphicsLayerLabels = new GraphicsLayer();
-          view.map.add(graphicsLayerLabels);
-
-          // When the scale is larger than 1:72,224 (zoomed in passed that scale),
-          // then switch from a heatmap renderer to a simple renderer. When zoomed
-          // out beyond that scale, switch back to the heatmap renderer
-          reactiveUtils.watch(
-            () => view.scale,
-            (scale) => {
-              checkinLayer.renderer =
-                scale <= 2224 ? simpleRenderer : heatmapRenderer;
-              if (scale <= 2224) {
-                checkinLayer.renderer = simpleRenderer;
-                // graphicsLayerLabels.visible = true;
-              } else {
-                checkinLayer.renderer = heatmapRenderer;
-                // graphicsLayerLabels.visible = false;
-              }
-            }
-          );
-
-          // Count features and create labels
-          const query = checkinLayer.createQuery();
-          query.where = "1=1"; // Adjust the query if needed
-          checkinLayer
-            .queryFeatures(query)
-            .then((results) => {
+            checkinLayer.queryFeatures(query).then((results) => {
               const features = results.features;
               const locationCountMap = {};
 
@@ -1414,8 +1463,6 @@
                 const textSymbol = {
                   type: "text", // autocasts as new TextSymbol()
                   color: "OrangeRed",
-                  // haloColor: "white",
-                  // haloSize: "1px",
                   xoffset: -17,
                   yoffset: 17,
                   text: `+${value.count}`, // Prepend + to the count
@@ -1432,14 +1479,36 @@
                   symbol: textSymbol,
                 });
 
-                graphicsLayerLabels.add(pointGraphic);
+                graphicsLayerLabels.add(pointGraphic); // Use the existing graphicsLayerLabels
               }
-            })
-            .catch((error) => {
+            }).catch((error) => {
               console.error("Feature query failed: ", error);
             });
-        });
+          }, 250); // Small delay to ensure the refresh completes
+        }
 
+        view.when().then(() => {
+          const heatmapRenderer = checkinLayer.renderer.clone();
+
+          const simpleRenderer = {
+            type: "simple",
+            symbol: {
+              type: "picture-marker",
+              url: "https://daraobeirne.github.io/kisspng-drawing-pin-world-map-logo-push-vector-5ae029f6ddeaf4.198342921524640246909.png",
+              width: "30px",
+              height: "30px",
+            },
+          };
+
+          reactiveUtils.watch(
+            () => view.scale,
+            (scale) => {
+              checkinLayer.renderer = scale <= 2224 ? simpleRenderer : heatmapRenderer;
+            }
+          );
+
+          updateLabelGraphics(); // Initial label update
+        });
 
 
 
