@@ -386,7 +386,7 @@
         // Create featurelayer from feature service
         const checkinLayer = new FeatureLayer({
           // URL to the service
-          url: "https://services6.arcgis.com/iJvPfNHiyOlxpESW/arcgis/rest/services/CheckinLayer/FeatureServer/0",
+          url: "https://services1.arcgis.com/hNdlQs8LmfOE1CcF/arcgis/rest/services/checkin/FeatureServer/0",
           renderer: renderer,
         });
 
@@ -499,34 +499,61 @@
         view.ui.add(track, "top-left");
 
 
-
-
         view.when(() => {
-          // let prevLocation = customLocation;
+  // Start the Track widget manually
+  track.start();
+});
 
-          // // Simulate tracking to the custom location
-          // track.on("track", () => {
-          //   const location = customLocation;
+// Function to pause the track widget
+function pauseTracking() {
+  if (track.tracking) {
+    track.stop();
+  }
+}
 
-          //   // Control how the map navigates to the location
-          //   view.goTo({
-          //     center: location,
-          //     tilt: 50,
-          //     scale: 2500,
-          //     heading: 360 - getHeading(location, prevLocation),  // Only for SceneView
-          //     rotation: 360 - getHeading(location, prevLocation)   // Only for MapView
-          //   }).catch((error) => {
-          //     if (error.name != "AbortError") {
-          //       console.error(error);
-          //     }
-          //   });
+// Function to resume the track widget
+function resumeTracking() {
+  if (!track.tracking) {
+    track.start();
+  }
+}
 
-          //   prevLocation = location.clone();
-          // });
+// Pause tracking when user starts interacting with the map
+view.on("drag", pauseTracking);
+view.on("zoom-start", pauseTracking);
+view.on("pointer-down", pauseTracking);
 
-          // Start the Track widget manually
-          track.start();
-        });
+// Resume tracking when user interaction ends
+view.on("zoom-end", resumeTracking);
+// view.on("pointer-up", resumeTracking);
+view.on("pointer-drag-end", resumeTracking);
+
+        // view.when(() => {
+        //   // let prevLocation = customLocation;
+
+        //   // // Simulate tracking to the custom location
+        //   // track.on("track", () => {
+        //   //   const location = customLocation;
+
+        //   //   // Control how the map navigates to the location
+        //   //   view.goTo({
+        //   //     center: location,
+        //   //     tilt: 50,
+        //   //     scale: 2500,
+        //   //     heading: 360 - getHeading(location, prevLocation),  // Only for SceneView
+        //   //     rotation: 360 - getHeading(location, prevLocation)   // Only for MapView
+        //   //   }).catch((error) => {
+        //   //     if (error.name != "AbortError") {
+        //   //       console.error(error);
+        //   //     }
+        //   //   });
+
+        //   //   prevLocation = location.clone();
+        //   // });
+
+        //   // Start the Track widget manually
+        //   track.start();
+        // });
 
         // // Function to calculate heading between two points
         // function getHeading(point, oldPoint) {
